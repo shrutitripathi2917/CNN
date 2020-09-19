@@ -4,6 +4,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing import image
 
 classifier=Sequential()
 
@@ -24,11 +25,11 @@ classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accurac
 train_datagen=ImageDataGenerator(rescale=1./255,shear_range=0.2,zoom_range=0.2,horizontal_flip=True)
 test_datagen=ImageDataGenerator(rescale=1./255)
 
-training_set=train_datagen.flow_from_directory('C:/Users/shruti/Downloads/dogcat/dogcat_new/inputImage',
+training_set=train_datagen.flow_from_directory('C:/Users/shruti/Downloads/dogcat/dogcat_new/dogcat',
                                                target_size=(64,64),
                                                batch_size=32,
                                                class_mode='binary')
-test_set=test_datagen.flow_from_directory('c:/Users/shruti/Downloads/dogcat/dogcat_new/inputImage',
+test_set=test_datagen.flow_from_directory('C:/Users/shruti/Downloads/dogcat/dogcat_new/dogcat',
                                                target_size=(64,64),
                                                batch_size=32,
                                                class_mode='binary')
@@ -37,3 +38,21 @@ model = classifier.fit_generator(training_set,
                                  epochs=1,
                                  validation_data=test_set,
                                  validation_steps=2000)
+
+classifier.save('model.h5')
+print("saved model to disk")
+
+
+import numpy as np
+test_image=image.load_img('C:/Users/shruti/Downloads/dogcat/dogcat_new/cat.jpg' , target_size=(64,64))
+test_image=image.img_to_array(test_image)
+test_image=np.expand_dims(test_image,axis=0)
+result=model.predict(test_image)
+training_set.class_indices
+
+if result[0][0]==1:
+    prediction="Dog"
+    print(prediction)
+else:
+    prediction='Cat'
+    print(prediction)
